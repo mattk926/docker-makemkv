@@ -32,28 +32,7 @@ COPY --from=0 /tmp/makemkv-install /
 
 # Install Java.
 RUN \
-    add-pkg --virtual build-dependencies \
-        curl \
-        && \
-    mkdir /tmp/jdk/ && \
-    # Download and extract.
-    curl -# -L "${OPENJDK_URL}" | tar xz --strip 1 -C /tmp/jdk && \
-    # Create a minimal Java install.
-    mkdir /usr/lib/jvm/ && \
-    /tmp/jdk/bin/jlink \
-        --compress=2 \
-        --module-path /tmp/jdk/jmods \
-        --add-modules "$(/tmp/jdk/bin/jdeps /opt/makemkv/share/MakeMKV/blues.jar | grep -v blues.jar | grep -v 'not found' | awk '{ print $4 }'| sort -u | tr '\n' ',')" \
-        --output /usr/lib/jvm/jdk \
-        && \
-    # Removed uneeded stuff.
-    rm -r \
-        /usr/lib/jvm/jdk/include \
-        /usr/lib/jvm/jdk/legal \
-        && \
-    # Cleanup.
-    del-pkg build-dependencies && \
-    rm -rf /tmp/* /tmp/.[!.]*
+    apk add openjdk8-jre
 
 # Compile and install ccextractor.
 RUN \
